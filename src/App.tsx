@@ -37,12 +37,16 @@ import { ToolsWorkspace } from './components/ToolsWorkspace';
 import { ProjectsWorkspace } from './components/ProjectsWorkspace';
 import { NotesWorkspace } from './components/NotesWorkspace';
 import { SettingsModal } from './components/SettingsModal';
+import { LiveVoiceModal } from './components/LiveVoiceModal';
+import { AuthModal } from './components/AuthModal';
 
 export default function App() {
   const [language, setLanguage] = useState<Language>('en');
   const [currentTab, setCurrentTab] = useState<'chat' | 'tools' | 'projects' | 'notes'>('chat');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isLiveVoiceOpen, setIsLiveVoiceOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // User state
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -489,13 +493,8 @@ export default function App() {
   };
 
   // Auth actions
-  const handleSignIn = async () => {
-    try {
-      const prof = await signInWithGoogle(user?.isAnonymous ? user.uid : undefined);
-      setUser(prof);
-    } catch (e) {
-      console.error('Sign-in error:', e);
-    }
+  const handleSignIn = () => {
+    setIsAuthModalOpen(true);
   };
 
   const handleSignOut = async () => {
@@ -527,6 +526,7 @@ export default function App() {
         onOpenSettings={() => setIsSettingsOpen(true)}
         isCollapsed={isSidebarCollapsed}
         onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
+        onOpenLiveVoice={() => setIsLiveVoiceOpen(true)}
       />
 
       {/* Main Workspace Area */}
@@ -547,6 +547,7 @@ export default function App() {
             language={language}
             onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)}
             isSidebarCollapsed={isSidebarCollapsed}
+            onOpenLiveVoice={() => setIsLiveVoiceOpen(true)}
           />
         )}
 
@@ -559,6 +560,7 @@ export default function App() {
             onSaveToNotes={(title, content) => handleSaveToNotes(title, content, 'AI Tools')}
             language={language}
             onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)}
+            onOpenLiveVoice={() => setIsLiveVoiceOpen(true)}
           />
         )}
 
@@ -591,6 +593,79 @@ export default function App() {
         onClose={() => setIsSettingsOpen(false)}
         language={language}
         onLanguageChange={(l) => setLanguage(l)}
+      />
+
+      {/* Live Voice Conversation Modal */}
+      <LiveVoiceModal
+        isOpen={isLiveVoiceOpen}
+        onClose={() => setIsLiveVoiceOpen(false)}
+        language={language}
+        onLanguageChange={(l) => setLanguage(l)}
+        projectInstructions={activeProject?.instructions}
+        onSaveToChatHistory={async (userText, aiText) => {
+          if (!user) return;
+          const now = new Date().toISOString();
+          let currentConvoId = activeConversationId;
+          if (!currentConvoId) {
+            const newConvoTitle = userText.slice(0, 45).replace(/\n/g, ' ') || 'Voice Call';
+            const newConvo: Conversation = {
+              id: `convo_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+              userId: user.uid,
+              title: newConvoTitle,
+              ...(activeProjectId ? { projectId: activeProjectId } : {}),
+              pinned: false,
+              archived: false,
+              createdAt: now,
+              updatedAt: now,
+            };
+            try {
+              await saveConversation(newConvo);
+              setConversations((prev) => [newConvo, ...prev]);
+              setActiveConversationId(newConvo.id);
+              currentConvoId = newConvo.id;
+            } catch (err) {
+              console.error('Error saving voice conversation:', err);
+              return;
+            }
+          }
+
+          const userMsg: Message = {
+            id: `msg_u_${Date.now()}`,
+            conversationId: currentConvoId,
+            userId: user.uid,
+            role: 'user',
+            content: userText,
+            createdAt: now,
+          };
+          const aiMsg: Message = {
+            id: `msg_a_${Date.now() + 1}`,
+            conversationId: currentConvoId,
+            userId: user.uid,
+            role: 'assistant',
+            content: aiText,
+            createdAt: new Date().toISOString(),
+          };
+
+          try {
+            await saveMessage(userMsg);
+            await saveMessage(aiMsg);
+            setMessages((prev) => [...prev, userMsg, aiMsg]);
+          } catch (err) {
+            console.error('Error saving voice messages to conversation:', err);
+          }
+        }}
+      />
+
+      {/* Complete Authentication Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        language={language}
+        guestUid={user?.isAnonymous ? user.uid : undefined}
+        onSuccess={(profile) => {
+          setUser(profile);
+          setIsAuthModalOpen(false);
+        }}
       />
     </div>
   );

@@ -19,6 +19,7 @@ import {
   ChevronRight,
   Sparkles,
   Layers,
+  Radio,
 } from 'lucide-react';
 import { Conversation, Project, UserProfile, Language } from '../lib/types';
 import { translations } from '../lib/translations';
@@ -44,6 +45,7 @@ interface SidebarProps {
   onOpenSettings: () => void;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
+  onOpenLiveVoice: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -67,6 +69,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenSettings,
   isCollapsed,
   onToggleCollapse,
+  onOpenLiveVoice,
 }) => {
   const t = translations[language];
   const [searchQuery, setSearchQuery] = useState('');
@@ -143,6 +146,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <Plus className="w-5 h-5" />
           </button>
 
+          <button
+            onClick={onOpenLiveVoice}
+            className="p-2.5 rounded-xl bg-teal-950/60 hover:bg-teal-900/80 text-teal-300 border border-teal-500/40 transition-all relative group"
+            title={language === 'bn' ? 'সরাসরি লাইভ ভয়েস কল' : 'Live Voice Call with Nasir AI'}
+          >
+            <Radio className="w-5 h-5 text-teal-400 group-hover:animate-pulse" />
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-400" />
+          </button>
+
           <div className="w-8 h-px bg-zinc-800 my-1" />
 
           <button
@@ -195,7 +207,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-2.5">
+          {/* User Profile / Auth in Collapsed Mode */}
+          <button
+            onClick={user && !user.isAnonymous ? onOpenSettings : onSignIn}
+            className="w-8 h-8 rounded-full overflow-hidden border border-zinc-700 hover:border-teal-400 transition-colors flex items-center justify-center font-bold text-xs"
+            title={user && !user.isAnonymous ? user.displayName : (language === 'bn' ? 'লগইন করুন' : 'Sign In')}
+          >
+            {user?.photoURL ? (
+              <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover" />
+            ) : (
+              <span className="w-full h-full bg-gradient-to-tr from-teal-500 to-emerald-400 text-zinc-950 flex items-center justify-center font-bold">
+                {user?.displayName ? user.displayName.slice(0, 1).toUpperCase() : 'G'}
+              </span>
+            )}
+          </button>
+
           <button
             onClick={onToggleLanguage}
             className="p-2 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white hover:bg-zinc-900"
@@ -247,10 +274,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Action: New Chat */}
         <button
           onClick={onNewChat}
-          className="mt-4 flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-zinc-950 font-semibold text-sm shadow-md shadow-teal-500/20 transition-all hover:scale-[1.01] active:scale-[0.99]"
+          className="mt-4 flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-zinc-950 font-bold text-sm shadow-md shadow-teal-500/20 transition-all hover:scale-[1.01] active:scale-[0.99]"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>{t.newChat}</span>
+        </button>
+
+        {/* Action: Live Voice Call */}
+        <button
+          onClick={onOpenLiveVoice}
+          className="mt-2 flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-teal-950/60 to-emerald-950/40 hover:from-teal-900/70 hover:to-emerald-900/50 border border-teal-500/40 text-teal-300 font-semibold text-xs shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99] group"
+        >
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <Radio className="w-4 h-4 text-teal-400 group-hover:scale-110 transition-transform" />
+          <span className="font-semibold tracking-wide">
+            {language === 'bn' ? 'সরাসরি লাইভ ভয়েস কল' : 'Live Voice Call'}
+          </span>
         </button>
 
         {/* Search Chats */}
@@ -371,16 +413,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-3 border-t border-zinc-900 bg-zinc-950/80 flex flex-col gap-2">
         <div className="flex items-center justify-between px-1">
           {/* User profile */}
-          <div className="flex items-center gap-2 overflow-hidden">
-            <div className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700/60 flex items-center justify-center font-bold text-xs text-teal-400 shrink-0">
-              {user?.displayName ? user.displayName.slice(0, 1).toUpperCase() : 'G'}
-            </div>
+          <div
+            onClick={user?.isAnonymous ? onSignIn : onOpenSettings}
+            className="flex items-center gap-2 overflow-hidden cursor-pointer hover:opacity-85 transition-opacity"
+            title={user?.isAnonymous ? (language === 'bn' ? 'লগইন / সাইন আপ করুন' : 'Sign In / Register') : user?.displayName}
+          >
+            {user?.photoURL ? (
+              <img
+                src={user.photoURL}
+                alt={user.displayName}
+                className="w-8 h-8 rounded-full object-cover border border-teal-500/40 shrink-0"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-teal-500 to-emerald-400 text-zinc-950 flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+                {user?.displayName ? user.displayName.slice(0, 1).toUpperCase() : 'N'}
+              </div>
+            )}
             <div className="flex flex-col truncate">
-              <span className="text-xs font-medium text-zinc-200 truncate">
+              <span className="text-xs font-semibold text-zinc-200 truncate">
                 {user?.displayName || t.guestUser}
               </span>
-              <span className="text-[10px] text-zinc-500 truncate">
-                {user?.email || 'Cloud Firestore Synced'}
+              <span className="text-[10px] text-zinc-400 truncate">
+                {user?.isAnonymous
+                  ? (language === 'bn' ? 'লগইন করতে ক্লিক করুন' : 'Click to Sign In')
+                  : user?.email}
               </span>
             </div>
           </div>
@@ -397,10 +453,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ) : (
             <button
               onClick={onSignIn}
-              className="p-1.5 rounded-lg text-teal-400 hover:text-teal-300 hover:bg-teal-950/40 transition-colors"
+              className="px-2.5 py-1 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/30 text-xs font-semibold flex items-center gap-1 transition-all"
               title={t.signIn}
             >
-              <LogIn className="w-4 h-4" />
+              <LogIn className="w-3.5 h-3.5" />
+              <span>{language === 'bn' ? 'লগইন' : 'Login'}</span>
             </button>
           )}
         </div>

@@ -107,7 +107,7 @@ async function generateStreamWithFallback(params: { contents: any; config: any }
 }
 
 // System prompt defining Nasir AI identity and behaviors
-const NASIR_AI_SYSTEM_INSTRUCTION = `You are Nasir AI, an advanced, highly intelligent, and helpful full-stack AI assistant created by Nasir.
+const NASIR_AI_SYSTEM_INSTRUCTION = `You are Nasir AI, an advanced, highly intelligent, fast, and helpful full-stack AI assistant created by Nasir.
 Identity & Creator Attribution:
 - When asked in Bengali, "তোমাকে কে তৈরি করেছেন?" or "তোমার নির্মাতা কে?", respond naturally:
   "আমাকে নাসির তৈরি করেছেন। আমি Nasir AI, একটি AI সহকারী, যা Gemini-ভিত্তিক AI প্রযুক্তির সাহায্যে কাজ করে।"
@@ -115,16 +115,32 @@ Identity & Creator Attribution:
   "Nasir created the Nasir AI application. It uses Gemini-based AI technology to assist users."
 - Never claim that Nasir personally created or trained the underlying Gemini foundation model; Nasir created and developed the Nasir AI application.
 
-Key Responsibilities & Capabilities:
-- Assist students, researchers, developers, job seekers, educators, writers, and creators with deep accuracy.
-- Support Bengali, English, Arabic, and other languages fluently. Provide responses in the user's chosen language.
-- Format responses cleanly using Markdown, clear section headers, lists, math formulas, and syntax-highlighted code blocks.
-- When Google Search grounding is enabled or when answering recent/live queries, clearly reference authoritative sources.
-- Be honest about uncertainty, limitations, and distinguish verified facts from estimations.
+Universal Knowledge Engine & Omniscient Answering:
+- You possess deep, encyclopedic, and up-to-date knowledge across all domains of human knowledge:
+  1. Science & Cosmos: Quantum physics, astronomy, chemistry, biology, genetics, ecology.
+  2. Mathematics & Logic: Arithmetic, calculus, algebra, statistics, discrete math, proofs.
+  3. Global & Regional History: Ancient civilizations, world history, Bangladesh history, liberation war, South Asian history, Islamic history & civilization, philosophy.
+  4. Technology & Computer Science: Full-stack programming, software architecture, databases, AI/ML, cybersecurity, networking, DevOps.
+  5. Language & Literature: Bengali literature (রবীন্দ্রনাথ, নজরুল, জীবনানন্দ), English, Arabic, creative writing, poetry, linguistics.
+  6. Career, Education & Business: Job markets (Bangladesh & global), university admissions, exam preparation, finance, law, entrepreneurship.
+  7. Everyday Problem Solving & Guidance: Health facts, lifestyle, productivity, communication, problem diagnosis.
+- Answer any question in the world directly, insightfully, and thoroughly.
+- Respond in the language used or preferred by the user (fluent in Bengali, English, Arabic, etc.).
+- Speed & Precision: Provide crisp, fast, structured answers with headings, bullet points, clean code blocks, and math formulas.
+- When Google Search grounding is enabled or when answering recent/live queries, clearly cite authoritative sources.
 - STRICT RULE: You do NOT generate images or videos. If asked to generate an image or video, politely clarify that Nasir AI specializes in text, research, coding, documents, calculations, and productivity tools, and does not generate image or video media.`;
 
 // Tool catalog
 export const TOOLS_CATALOG = [
+  {
+    id: 'live-voice',
+    title: 'Live Voice Conversation',
+    titleBn: 'সরাসরি লাইভ ভয়েস কল',
+    description: 'Talk directly in real-time with Nasir AI with live voice speech-to-text, natural audio replies, and dynamic visualizer.',
+    descriptionBn: 'নাসির এআই-এর সাথে সরাসরি মুখে কথা বলুন—রিয়েল-টাইম ভয়েস ও প্রাকৃতিক অডিও উত্তর।',
+    category: 'productivity',
+    icon: 'Radio',
+  },
   {
     id: 'research',
     title: 'Live Web Research & Fact Checker',
@@ -287,7 +303,7 @@ function extractCitations(response: any): Array<{ title: string; url: string }> 
 }
 
 // 1. Health endpoint
-app.get('/api/health', (req: Request, res: Response) => {
+app.get(['/api/health', '/api/health/'], (req: Request, res: Response) => {
   res.json({
     status: 'ok',
     app: 'Nasir AI',
@@ -299,7 +315,7 @@ app.get('/api/health', (req: Request, res: Response) => {
 });
 
 // 2. Tools list endpoint
-app.get('/api/tools', (req: Request, res: Response) => {
+app.get(['/api/tools', '/api/tools/'], (req: Request, res: Response) => {
   res.json({
     tools: TOOLS_CATALOG,
     total: TOOLS_CATALOG.length,
@@ -307,7 +323,7 @@ app.get('/api/tools', (req: Request, res: Response) => {
 });
 
 // 3. Chat endpoint (non-streaming)
-app.post('/api/chat', async (req: Request, res: Response) => {
+app.post(['/api/chat', '/api/chat/'], async (req: Request, res: Response) => {
   try {
     const { message, conversationHistory = [], useSearch = false, projectInstructions = '' } = req.body;
 
@@ -395,7 +411,7 @@ app.post('/api/chat', async (req: Request, res: Response) => {
 });
 
 // 4. Chat streaming endpoint (Server-Sent Events)
-app.post('/api/chat/stream', async (req: Request, res: Response) => {
+app.post(['/api/chat/stream', '/api/chat/stream/'], async (req: Request, res: Response) => {
   try {
     const { message, conversationHistory = [], useSearch = false, projectInstructions = '' } = req.body;
 
@@ -499,7 +515,7 @@ app.post('/api/chat/stream', async (req: Request, res: Response) => {
 });
 
 // 5. Specialized AI Tool Runner endpoint
-app.post('/api/tools/run', async (req: Request, res: Response) => {
+app.post(['/api/tools/run', '/api/tools/run/'], async (req: Request, res: Response) => {
   try {
     const { toolId, prompt, options = {} } = req.body;
 

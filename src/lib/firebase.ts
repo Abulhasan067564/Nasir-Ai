@@ -5,6 +5,10 @@ import {
   signInWithPopup,
   signOut as fbSignOut,
   onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  updateProfile,
   User,
 } from 'firebase/auth';
 import {
@@ -192,6 +196,118 @@ export async function signInWithGoogle(guestUid?: string): Promise<UserProfile> 
   } catch (err) {
     console.error('Google Sign-in failed:', err);
     throw err;
+  }
+}
+
+export async function signUpWithEmail(
+  email: string,
+  pass: string,
+  displayName: string,
+  photoURL?: string,
+  guestUid?: string
+): Promise<UserProfile> {
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    const user = cred.user;
+
+    // Update display name and photo in Firebase Auth
+    await updateProfile(user, {
+      displayName: displayName.trim() || email.split('@')[0],
+      photoURL: photoURL || undefined,
+    });
+
+    const profile: UserProfile = {
+      uid: user.uid,
+      email: user.email || email,
+      displayName: displayName.trim() || email.split('@')[0],
+      photoURL: photoURL || undefined,
+      isAnonymous: false,
+    };
+
+    // Save profile to Firestore
+    try {
+      await setDoc(
+        doc(db, 'users', user.uid),
+        cleanFirestoreData({
+          ...profile,
+          updatedAt: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+        }),
+        { merge: true }
+      );
+    } catch (e) {
+      console.warn('Could not persist new user profile to Firestore:', e);
+    }
+
+    if (guestUid && guestUid !== user.uid) {
+      syncGuestDataToFirestore(guestUid, user.uid);
+    }
+
+    return profile;
+  } catch (err: any) {
+    console.error('Email Sign-up failed:', err);
+    throw err;
+  }
+}
+
+export async function signInWithEmail(
+  email: string,
+  pass: string,
+  guestUid?: string
+): Promise<UserProfile> {
+  try {
+    const cred = await signInWithEmailAndPassword(auth, email, pass);
+    const user = cred.user;
+    const profile: UserProfile = {
+      uid: user.uid,
+      email: user.email || email,
+      displayName: user.displayName || user.email?.split('@')[0] || 'User',
+      photoURL: user.photoURL || undefined,
+      isAnonymous: false,
+    };
+
+    if (guestUid && guestUid !== user.uid) {
+      syncGuestDataToFirestore(guestUid, user.uid);
+    }
+
+    return profile;
+  } catch (err: any) {
+    console.error('Email Sign-in failed:', err);
+    throw err;
+  }
+}
+
+export async function resetPassword(email: string): Promise<void> {
+  try {
+    await sendPasswordResetEmail(auth, email);
+  } catch (err: any) {
+    console.error('Password reset email failed:', err);
+    throw err;
+  }
+}
+
+export async function updateUserProfile(
+  displayName: string,
+  photoURL?: string
+): Promise<void> {
+  if (!auth.currentUser) return;
+  await updateProfile(auth.currentUser, {
+    displayName: displayName.trim(),
+    photoURL: photoURL || undefined,
+  });
+
+  try {
+    await setDoc(
+      doc(db, 'users', auth.currentUser.uid),
+      cleanFirestoreData({
+        displayName: displayName.trim(),
+        photoURL: photoURL || undefined,
+        updatedAt: new Date().toISOString(),
+      }),
+      { merge: true }
+    );
+  } catch (e) {
+    console.warn('Could not update profile in Firestore:', e);
   }
 }
 

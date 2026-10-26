@@ -26,6 +26,7 @@ import {
   Download,
   Filter,
   Menu,
+  Radio,
 } from 'lucide-react';
 import { AIToolDef, Language, Citation } from '../lib/types';
 import { translations } from '../lib/translations';
@@ -37,6 +38,7 @@ interface ToolsWorkspaceProps {
   onSaveToNotes: (title: string, content: string) => void;
   language: Language;
   onToggleSidebar?: () => void;
+  onOpenLiveVoice?: () => void;
 }
 
 export const ToolsWorkspace: React.FC<ToolsWorkspaceProps> = ({
@@ -44,11 +46,21 @@ export const ToolsWorkspace: React.FC<ToolsWorkspaceProps> = ({
   onSaveToNotes,
   language,
   onToggleSidebar,
+  onOpenLiveVoice,
 }) => {
   const t = translations[language];
 
   // Tool Definitions
   const toolsList: AIToolDef[] = [
+    {
+      id: 'live-voice',
+      title: 'Live Voice Conversation',
+      titleBn: 'সরাসরি লাইভ ভয়েস কল',
+      description: 'Talk in real-time with Nasir AI with live voice speech-to-text, natural audio replies, and dynamic visualizer.',
+      descriptionBn: 'নাসির এআই-এর সাথে সরাসরি মুখে কথা বলুন—রিয়েল-টাইম ভয়েস ও প্রাকৃতিক অডিও উত্তর।',
+      category: 'productivity',
+      icon: 'Radio',
+    },
     {
       id: 'research',
       title: 'Live Web Research & Fact Checker',
@@ -235,6 +247,8 @@ export const ToolsWorkspace: React.FC<ToolsWorkspaceProps> = ({
         return <Compass className="w-5 h-5 text-orange-400" />;
       case 'Calendar':
         return <Calendar className="w-5 h-5 text-emerald-400" />;
+      case 'Radio':
+        return <Radio className="w-5 h-5 text-emerald-400" />;
       default:
         return <Sparkles className="w-5 h-5 text-teal-400" />;
     }
@@ -410,6 +424,33 @@ export const ToolsWorkspace: React.FC<ToolsWorkspaceProps> = ({
 
           {/* Tool Parameters & Options */}
           <div className="p-4 rounded-xl bg-zinc-950/70 border border-zinc-800/80 space-y-3">
+            {selectedTool.id === 'live-voice' && (
+              <div className="p-6 rounded-2xl bg-gradient-to-r from-teal-950/60 to-emerald-950/50 border border-teal-500/40 text-center space-y-4">
+                <div className="w-16 h-16 rounded-full bg-teal-500/20 text-teal-400 mx-auto flex items-center justify-center animate-pulse">
+                  <Radio className="w-8 h-8" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white">
+                    {language === 'bn' ? 'সরাসরি লাইভ ভয়েস কথোপকথন' : 'Live Voice Conversation Call'}
+                  </h3>
+                  <p className="text-xs text-zinc-300 max-w-md mx-auto mt-1">
+                    {language === 'bn'
+                      ? 'হ্যান্ডস-ফ্রি সরাসরি মুখে কথা বলুন। যেকোনো প্রশ্ন করুন এবং সাথে সাথে প্রাকৃতিক ভয়েস অডিও উত্তর শুনুন।'
+                      : 'Hands-free voice conversation. Speak directly and hear real-time audio responses.'}
+                  </p>
+                </div>
+                {onOpenLiveVoice && (
+                  <button
+                    type="button"
+                    onClick={onOpenLiveVoice}
+                    className="px-6 py-3 rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-zinc-950 font-bold text-sm shadow-xl shadow-teal-500/25 hover:scale-105 active:scale-95 transition-all inline-flex items-center gap-2"
+                  >
+                    <Radio className="w-4 h-4" />
+                    <span>{language === 'bn' ? 'লাইভ কল শুরু করুন' : 'Start Live Voice Call'}</span>
+                  </button>
+                )}
+              </div>
+            )}
             {selectedTool.id === 'study-tutor' && (
               <div>
                 <label className="text-xs font-medium text-zinc-300 block mb-1">

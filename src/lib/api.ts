@@ -72,8 +72,18 @@ export async function streamChatMessage(
     });
 
     if (!res.ok) {
-      const errJson = await res.json().catch(() => ({}));
-      throw new Error(errJson.error || `Stream failed with status ${res.status}`);
+      console.warn(`Stream endpoint returned status ${res.status}. Falling back to standard chat API...`);
+      try {
+        const fallback = await sendChatMessage(message, conversationHistory, useSearch, projectInstructions);
+        callbacks.onDone({
+          fullText: fallback.reply,
+          citations: fallback.citations || [],
+          searchGrounded: fallback.searchGrounded,
+        });
+        return;
+      } catch (fallbackErr: any) {
+        throw new Error(fallbackErr.message || `Request failed with status ${res.status}`);
+      }
     }
 
     const reader = res.body?.getReader();
@@ -123,7 +133,18 @@ export async function streamChatMessage(
       console.log('Stream was aborted by user');
       return;
     }
-    callbacks.onError(err.message || 'Stream communication failed');
+    // Attempt fallback if network/stream fails
+    try {
+      console.warn('Stream failed or disconnected, falling back to standard /api/chat...');
+      const fallback = await sendChatMessage(message, conversationHistory, useSearch, projectInstructions);
+      callbacks.onDone({
+        fullText: fallback.reply,
+        citations: fallback.citations || [],
+        searchGrounded: fallback.searchGrounded,
+      });
+    } catch {
+      callbacks.onError(err.message || 'Stream communication failed');
+    }
   }
 }
 

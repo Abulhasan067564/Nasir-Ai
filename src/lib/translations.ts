@@ -45,20 +45,28 @@ export const translations = {
     welcomeSub: 'Nasir AI helps you learn, write, research, build software, and navigate your career.',
     starterPrompts: [
       {
-        title: 'Learn in Bengali',
-        prompt: 'বাংলায় সৌরজগতের গঠন ও গ্রহগুলোর বৈশিষ্ট্য সহজভাবে বুঝিয়ে বলুন।',
+        title: 'Cosmos & Quantum Physics',
+        prompt: 'Explain the origin of the universe, Big Bang, black hole event horizons, and quantum entanglement in clear terms.',
       },
       {
-        title: 'Bangladesh Job Market',
-        prompt: 'বাংলাদেশে ফ্রন্টএন্ড ডেভেলপারদের জন্য বর্তমান চাকরির বাজার এবং প্রয়োজনীয় দক্ষতার বিস্তারিত রূপরেখা দিন।',
+        title: 'World History & Civilizations',
+        prompt: 'How did the Indus Valley, Ancient Egyptian, and Mesopotamian civilizations influence modern human governance?',
       },
       {
-        title: 'Step-by-Step Math',
-        prompt: 'Solve step-by-step: 2x² - 8x + 6 = 0 using factoring and quadratic formula.',
+        title: 'Step-by-Step Mathematics',
+        prompt: 'Solve step-by-step: 2x² - 8x + 6 = 0 using factoring and quadratic formula with intermediate steps.',
       },
       {
-        title: 'Full-Stack Architecture',
-        prompt: 'Explain the architecture of a production React + Node.js application with security best practices.',
+        title: 'Tech Architecture & Coding',
+        prompt: 'Explain production-grade microservices vs monolith architecture with caching, database sharding, and security.',
+      },
+      {
+        title: 'Global Career & AI Skills',
+        prompt: 'What are the top high-paying tech and AI skills for 2026, and how can I prepare a winning portfolio?',
+      },
+      {
+        title: 'Islamic Golden Age & Science',
+        prompt: 'Detail the scientific and mathematical contributions of Al-Khwarizmi, Ibn al-Haytham, and Ibn Sina to modern science.',
       },
     ],
     sources: 'Verified Web Sources',
@@ -141,20 +149,28 @@ export const translations = {
     welcomeSub: 'নাসির এআই পড়াশোনা, লেখালেখি, গবেষণা, কোডিং ও ক্যারিয়ার উন্নয়নে আপনার নির্ভরযোগ্য ডিজিটাল সঙ্গী।',
     starterPrompts: [
       {
-        title: 'বাংলায় বিজ্ঞান শিখুন',
-        prompt: 'বাংলায় সৌরজগতের গঠন ও গ্রহগুলোর বৈশিষ্ট্য সহজভাবে বুঝিয়ে বলুন।',
+        title: 'মহাকাশ ও কোয়ান্টাম বিজ্ঞান',
+        prompt: 'মহাবিশ্বের সৃষ্টি, বিগ ব্যাং তত্ত্ব, ব্ল্যাক হোলের ঘটনা দিগন্ত এবং কোয়ান্টাম এনট্যাঙ্গলমেন্ট সহজ ও প্রাঞ্জল ভাষায় বুঝিয়ে বলুন।',
       },
       {
-        title: 'চাকরির বাজার ও প্রস্তুতি',
-        prompt: 'বাংলাদেশে ফ্রন্টএন্ড ডেভেলপারদের জন্য বর্তমান চাকরির বাজার এবং প্রয়োজনীয় দক্ষতার বিস্তারিত রূপরেখা দিন।',
+        title: 'বিশ্ব ইতিহাস ও প্রাচীন সভ্যতা',
+        prompt: 'সিন্ধু সভ্যতা, প্রাচীন মিশরীয় ও মেসোপটেমীয় সভ্যতা কীভাবে আধুনিক মানব সমাজ ও রাষ্ট্রব্যবস্থাকে প্রভাবিত করেছে?',
       },
       {
-        title: 'ধাপে ধাপে গণিত সমাধান',
-        prompt: 'উৎপাদকে বিশ্লেষণ করে সমাধান করুন: 2x² - 8x + 6 = 0, প্রতিটি ধাপ বিস্তারিত দেখান।',
+        title: 'ধাপে ধাপে নির্ভুল গণিত সমাধান',
+        prompt: 'উৎপাদকে বিশ্লেষণ করে সমাধান করুন: 2x² - 8x + 6 = 0, প্রতিটি ধাপ বিস্তারিত ব্যাখ্যা করুন।',
       },
       {
-        title: 'ফুল-স্ট্যাক সফটওয়্যার আর্কিটেকচার',
-        prompt: 'একটি আধুনিক ফুল-স্ট্যাক ওয়েব অ্যাপ্লিকেশনের আর্কিটেকচার ও ডেটা সিকিউরিটি বেস্ট প্র্যাকটিস ব্যাখ্যা করুন।',
+        title: 'সফটওয়্যার আর্কিটেকচার ও কোডিং',
+        prompt: 'একটি আধুনিক স্কেলেবল ওয়েব অ্যাপ্লিকেশনের মাইক্রোসার্ভিস আর্কিটেকচার, ক্যাশিং ও ডেটাবেস অপ্টিমাইজেশন কৌশল ব্যাখ্যা করুন।',
+      },
+      {
+        title: 'চাকরির বাজার ও ক্যারিয়ার প্রস্তুতি',
+        prompt: '২০২৬ সালে বাংলাদেশে ও বৈশ্বিক বাজারে সবচেয়ে চাহিদাসম্পন্ন সফটওয়্যার ও ডেটা স্কিল কী কী এবং কীভাবে প্রস্তুতি নেব?',
+      },
+      {
+        title: 'ইসলামের স্বর্ণযুগ ও বিজ্ঞানচর্চা',
+        prompt: 'আল-খোয়ারিজমি, ইবনে আল-হাইসাম এবং ইবনে সিনার গণিত, চিকিৎসা ও বিজ্ঞানের ঐতিহাসিক অবদান বিশদভাবে তুলে ধরুন।',
       },
     ],
     sources: 'যাচাইকৃত ওয়েব সূত্র',
