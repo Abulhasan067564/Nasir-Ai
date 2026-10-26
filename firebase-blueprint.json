@@ -1,0 +1,125 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "User account and preferences",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "preferredLanguage": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Conversation": {
+      "title": "Conversation",
+      "description": "Chat session with Nasir AI",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string", "maxLength": 120 },
+        "projectId": { "type": "string" },
+        "pinned": { "type": "boolean" },
+        "archived": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "title", "createdAt", "updatedAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Single message in a conversation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "conversationId": { "type": "string" },
+        "userId": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "assistant", "system"] },
+        "content": { "type": "string", "maxLength": 50000 },
+        "citations": { "type": "array" },
+        "searchGrounded": { "type": "boolean" },
+        "toolUsed": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "conversationId", "userId", "role", "content", "createdAt"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "Project workspace for organizing chat and context",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string", "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "instructions": { "type": "string", "maxLength": 6000 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "title", "createdAt", "updatedAt"]
+    },
+    "SavedNote": {
+      "title": "Saved Note",
+      "description": "Saved responses and knowledge notes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string", "maxLength": 150 },
+        "content": { "type": "string", "maxLength": 50000 },
+        "folder": { "type": "string" },
+        "tags": { "type": "array" },
+        "projectId": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "title", "content", "createdAt", "updatedAt"]
+    },
+    "ToolResult": {
+      "title": "Tool Result",
+      "description": "Saved output from Nasir AI productivity tools",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "toolId": { "type": "string" },
+        "prompt": { "type": "string", "maxLength": 12000 },
+        "result": { "type": "string", "maxLength": 50000 },
+        "citations": { "type": "array" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "toolId", "prompt", "result", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile data"
+    },
+    "/conversations/{conversationId}": {
+      "schema": "Conversation",
+      "description": "User chat conversations"
+    },
+    "/conversations/{conversationId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Messages belonging to a conversation"
+    },
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Projects workspace"
+    },
+    "/saved_notes/{noteId}": {
+      "schema": "SavedNote",
+      "description": "Saved knowledge and responses"
+    },
+    "/tools_history/{historyId}": {
+      "schema": "ToolResult",
+      "description": "AI tool execution outputs"
+    }
+  }
+}

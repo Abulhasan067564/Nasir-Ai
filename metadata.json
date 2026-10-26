@@ -1,0 +1,6 @@
+{
+  "name": "Nasir AI",
+  "description": "Advanced full-stack AI chatbot and productivity assistant powered by Gemini with search grounding, document analysis, and specialized tools.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

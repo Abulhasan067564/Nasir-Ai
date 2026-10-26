@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nasir AI — Advanced Full-Stack AI Assistant</title>
+    <meta name="description" content="Advanced full-stack AI chatbot and productivity assistant powered by Gemini with search grounding, document analysis, and specialized tools." />
+    <meta property="og:title" content="Nasir AI — Advanced Full-Stack AI Assistant" />
+    <meta property="og:description" content="Advanced full-stack AI chatbot and productivity assistant powered by Gemini with search grounding, document analysis, and specialized tools." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      (function () {
+        try {
+          var nativeFetch = window.fetch ? window.fetch.bind(window) : null;
+          var currentFetch = nativeFetch;
+          Object.defineProperty(window, 'fetch', {
+            get: function () {
+              return currentFetch;
+            },
+            set: function (val) {
+              currentFetch = val;
+            },
+            configurable: true,
+            enumerable: true,
+          });
+        } catch (e) {}
+
+        window.addEventListener(
+          'error',
+          function (e) {
+            if (e && e.filename && e.filename.indexOf('chrome-extension://') !== -1) {
+              e.stopImmediatePropagation();
+              e.preventDefault();
+            }
+          },
+          true
+        );
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

@@ -1,0 +1,548 @@
+# MASTER PROMPT: BUILD A COMPLETE, ADVANCED FULL-STACK AI CHATBOT — NASIR AI
+
+## 1. Main Project Goal
+
+Build a complete, advanced, production-oriented, full-stack AI chatbot web application named **Nasir AI**.
+
+Nasir AI must be a powerful general-purpose AI assistant inspired by the usability and organization of ChatGPT, but with its own unique branding, clean interface, useful tools, secure backend, persistent database, project workspace, and expandable architecture.
+
+This must be a real, functioning application, not a static design, frontend-only prototype, clickable mockup, demonstration project, or unfinished template.
+
+The purpose of Nasir AI is to help students, teachers, job seekers, developers, researchers, creators, professionals, and ordinary people with their daily tasks, learning, research, writing, programming, career development, problem-solving, and productivity.
+
+The application must be designed so that I, the owner and creator of the application, can add more AI models, tools, integrations, and capabilities through future updates without rebuilding the entire application.
+
+**Important exclusion:** Do not build an image generator or a video generator. Do not add image-generation or video-generation tools, buttons, pages, or API routes. Focus on a highly capable text-based AI assistant and practical productivity tools.
+
+## 2. Non-Negotiable Development Requirements
+
+1. Build the actual application and implement its frontend, backend, database, authentication, AI integrations, and tool functionality.
+2. Do not stop after creating the home page, dashboard, sidebar, or user interface.
+3. Do not use fake data, simulated AI replies, hardcoded sample job listings, placeholder search results, or artificial success messages.
+4. Every visible button, menu item, form, tool, upload control, and navigation element must perform its intended action.
+5. Connect each feature to its real backend implementation and verify that the complete user workflow works.
+6. Do not claim that a feature is operational unless the implementation and its required integrations are working.
+7. If an external service requires credentials, an API key, user permission, billing activation, or additional configuration, implement the integration correctly and clearly identify the missing setup. Never replace a missing integration with fake results.
+8. Use current, officially supported SDKs, APIs, model identifiers, and package versions. Avoid deprecated APIs.
+9. Fix build errors, TypeScript errors, API errors, authentication problems, database issues, and broken user interactions before considering the application complete.
+10. Maintain a clean, modular codebase so future updates can extend existing functionality instead of breaking it.
+
+Do not merely describe how to build this application. Work directly on the application code and implement as much of the complete, working product as the environment and configured services permit.
+
+## 3. Technology Stack and Architecture
+
+Build a responsive full-stack web application using the following architecture:
+
+- Frontend: React, TypeScript, and a modern, accessible component system.
+- Backend: A secure Node.js server runtime with organized API endpoints and reusable services.
+- AI engine: Integrate the Gemini API through the current supported Google GenAI SDK.
+- Database: Firebase Cloud Firestore for persistent application data.
+- Authentication: Firebase Authentication, supporting Google sign-in and secure account handling.
+- File storage: Firebase Cloud Storage when configured and supported, with properly secured uploads and downloads.
+- AI search: Integrate Google Search grounding where supported, including the source citations returned by the API.
+- AI calculation tools: Use supported code execution or other appropriate computation tools when genuinely available.
+- Configuration: Store API keys and secrets in the server-side secrets manager or environment variables.
+- Deployment readiness: Prepare the project to run in Google AI Studio's full-stack environment and deploy using its supported deployment workflow.
+
+Use the current supported Gemini model available to the application. Keep the model selection configurable in one central server-side configuration so it can be updated in the future.
+
+Never expose private API keys, service account credentials, or privileged database credentials in browser code.
+
+## 4. Professional User Interface
+
+Create a premium, modern, clean interface that is easy to use on desktop computers, tablets, and mobile phones.
+
+The default landing page must open directly into the main chat workspace, not a promotional landing page.
+
+### Left Sidebar
+
+Implement a fully functional sidebar containing:
+
+- Nasir AI logo and application name.
+- New Chat button.
+- Search Chats feature.
+- Recent Chat History.
+- Projects.
+- My Files.
+- Saved Responses.
+- AI Tools.
+- Settings.
+- Help and feedback.
+- Account profile and sign-out.
+
+Include a responsive collapse and expand button for the sidebar.
+
+### Main Chat Workspace
+
+Display a professional welcome message, a clear text-entry box, and useful suggested actions.
+
+The message composer must support:
+
+- Multiline text input.
+- Enter to send and Shift+Enter for a new line.
+- Send button.
+- Stop-generating button while a response is in progress.
+- File attachment and document upload.
+- Voice input where browser support and user permission are available.
+- Clear loading, success, and error states.
+
+Use readable typography, carefully spaced messages, formatted headings, tables, lists, mathematical notation, and syntax-highlighted code blocks.
+
+Support copy response, regenerate response, edit and resubmit a previous user message, and continue an existing conversation.
+
+Include helpful source citations and clickable links in research-based responses.
+
+Do not copy another company's logo or falsely present this application as an official ChatGPT product.
+
+## 5. Powerful AI Conversation Engine
+
+Nasir AI must be able to answer a broad range of questions, including:
+
+- General knowledge, science, mathematics, history, geography, technology, and education.
+- Programming, software development, debugging, and technical explanations.
+- Bengali, English, Arabic, and other supported languages.
+- Writing, translation, explanation, summarization, reasoning, planning, and research.
+- Student learning and exam preparation.
+- Career development, job searching, CV writing, and interview preparation.
+- Business ideas, productivity, personal organization, and everyday problem-solving.
+
+The assistant should automatically choose an appropriate tool when one would improve the answer.
+
+It should provide detailed answers when needed and simple explanations when the user is a beginner.
+
+Support Bengali and English as first-class languages. Allow users to switch the interface language, while also allowing them to ask questions in their preferred language.
+
+The AI must be honest about uncertainty, distinguish verified information from estimates, and avoid inventing facts, references, statistics, or capabilities.
+
+For questions involving recent developments, current regulations, live information, current job advertisements, or other changing facts, use appropriate live search and authoritative sources whenever available.
+
+If a question cannot be answered reliably, explain the limitation and offer the best supported answer instead of pretending to know everything.
+
+## 6. Chat History and Conversation Management
+
+Implement persistent chat history using Firestore.
+
+Required functionality:
+
+- Automatically save conversations and messages.
+- Restore existing conversations after sign-in or page refresh.
+- Keep user history synchronized across supported devices.
+- Rename, search, pin, archive, and delete conversations.
+- Confirm before permanently deleting a conversation.
+- Allow users to export conversations as downloadable text or Markdown files.
+- Preserve message order, timestamps, titles, and relevant conversation metadata.
+- Allow a user to continue a previous conversation with its stored context.
+- Provide appropriate loading, empty-history, and error states.
+
+Do not rely on browser local storage as the primary database for chat history.
+
+## 7. Advanced Project Workspace
+
+Create a real Projects feature inspired by modern AI project workspaces.
+
+Users must be able to:
+
+- Create, rename, and delete projects.
+- Give each project its own instructions and description.
+- Add multiple chat conversations to a project.
+- Upload and organize project documents.
+- Search project conversations and saved materials.
+- Continue project-related conversations using the appropriate project instructions and accessible files.
+- View project history, recent activity, and saved outputs.
+- Export a project's conversations and generated text documents.
+
+Store the project and conversation relationships in Firestore, with ownership validation on every operation.
+
+A project must persist after refresh, logout, and login from another supported device.
+
+## 8. High-Value AI Tools
+
+Create a fully functional AI Tools section. Each tool must have its own usable interface, correct backend logic, input validation, loading state, output display, error handling, and save or export options where relevant.
+
+### Tool 1: Live Web Research and Fact Checker
+
+Provide a research tool that can retrieve current web information using supported Google Search grounding.
+
+Features:
+
+- Search for current information.
+- Summarize relevant findings.
+- Show source titles and clickable source URLs.
+- Display citations close to the claims they support.
+- Help users compare sources and check conflicting information.
+- Clearly identify uncertainty and source limitations.
+- Distinguish current findings from general background knowledge.
+
+Do not fabricate citations or display a search result that was not actually retrieved.
+
+### Tool 2: Student AI Tutor
+
+Build a dedicated learning assistant.
+
+Features:
+
+- Explain difficult lessons step by step.
+- Adapt explanations to the student's grade, education level, and subject.
+- Explain mathematics, science, English, Bengali, Arabic, ICT, and other subjects.
+- Generate practice questions and answer keys.
+- Explain incorrect answers.
+- Create study plans, revision schedules, and examination preparation plans.
+- Summarize lessons and create revision notes.
+- Generate flashcards and multiple-choice quizzes.
+- Track a student's learning progress when they choose to save it.
+
+Teach students how to understand and solve problems rather than merely providing unexplained answers.
+
+### Tool 3: Mathematics and Calculation Assistant
+
+Support arithmetic, algebra, percentages, ratios, equations, statistics, and other appropriate mathematical problems.
+
+Provide clear, step-by-step explanations and formatted mathematical equations.
+
+Use supported computational tools when needed for complex calculations. Verify numerical results whenever practical.
+
+Do not pretend to have executed a calculation using a tool that is unavailable.
+
+### Tool 4: Document Reader and File Analysis
+
+Allow users to upload supported document formats, including PDF, TXT, DOCX, CSV, and XLSX, and other formats that are implemented correctly.
+
+Features:
+
+- Summarize uploaded documents.
+- Ask questions about document contents.
+- Extract key points and important dates.
+- Explain difficult paragraphs.
+- Compare two or more documents.
+- Extract tables and structured information where possible.
+- Analyze spreadsheets and their contents.
+- Save document summaries and export results.
+
+Validate file type and size, handle malformed files, and ensure users can access only files they are authorized to access.
+
+Store uploaded files using properly configured storage rather than keeping them only in temporary browser memory.
+
+### Tool 5: AI Writing and Translation Studio
+
+Provide tools for:
+
+- Bengali-to-English and English-to-Bengali translation.
+- Arabic and other supported-language translation.
+- Grammar correction.
+- Rewriting and improving text.
+- Essays, reports, notices, applications, letters, and formal documents.
+- Emails and professional messages.
+- Summaries, outlines, and structured notes.
+- Simplifying difficult text.
+- Proofreading and formatting.
+
+Include tone options such as professional, friendly, formal, concise, and educational.
+
+### Tool 6: Job Search and Career Assistant
+
+Create a career-support workspace, with particular usefulness for users in Bangladesh.
+
+Features:
+
+- Find current job opportunities through live web search or genuine connected job-search sources.
+- Search by profession, location, education, salary, and experience.
+- Show the employer or source, location, requirements, posting date when available, and original application link.
+- Help users understand job eligibility criteria.
+- Generate tailored CVs and resumes from information the user provides.
+- Prepare cover letters and job applications.
+- Compare job requirements against a user's qualifications.
+- Create career development and skills-learning plans.
+- Provide interview questions and a mock interview experience.
+- Help users prepare professional application emails.
+
+Never invent employers, job vacancies, salaries, deadlines, or application links.
+
+Never claim that a job is available or verified unless the connected source supports that claim. Explain that finding a job is assistance, not a guarantee of employment.
+
+### Tool 7: CV and Resume Builder
+
+Build an interactive CV creation tool.
+
+Users should be able to enter education, employment history, qualifications, skills, achievements, and contact details.
+
+Generate professionally formatted CVs, cover letters, and application documents.
+
+Allow users to edit the generated content and download supported document formats. Use actual document-generation code, not a fake download button.
+
+Protect the personal data contained in resumes and never expose it to another user.
+
+### Tool 8: Programming and Coding Assistant
+
+Support software development, including:
+
+- Writing code.
+- Explaining code line by line.
+- Finding bugs.
+- Suggesting fixes.
+- Refactoring and optimizing code.
+- Creating SQL queries.
+- Designing APIs and database schemas.
+- Explaining HTML, CSS, JavaScript, TypeScript, Python, Java, Kotlin, and other supported languages.
+- Helping users understand application architecture and deployment.
+
+Use syntax highlighting and copy-code buttons.
+
+Where a real execution environment is available, execute supported code in an appropriate sandbox. Never execute arbitrary untrusted user code directly on the production server.
+
+Do not claim to have executed or tested code unless the relevant execution or test actually ran.
+
+### Tool 9: Spreadsheet and Data Analysis
+
+Allow users to upload supported CSV and XLSX files.
+
+Implement features such as:
+
+- Data summaries.
+- Filtering and sorting.
+- Duplicate and missing-value detection.
+- Formula assistance.
+- Percentage and statistical calculations.
+- Tables and suitable interactive charts.
+- Data cleaning suggestions.
+- Plain-language explanations of findings.
+- Downloadable analysis results when the operation is implemented.
+
+Charts must represent actual uploaded or calculated data and must not be fabricated.
+
+### Tool 10: YouTube SEO and Content Assistant
+
+Provide a practical content-creation toolkit without generating images or videos.
+
+Features:
+
+- YouTube title suggestions.
+- Video descriptions.
+- Relevant keyword and tag suggestions.
+- Search-friendly metadata.
+- Audience research based on available sources.
+- Content calendars.
+- Video script outlines and written scripts.
+- Shorts script ideas.
+- Hook and opening-line improvements.
+- Content idea brainstorming.
+- Title comparison and packaging recommendations.
+
+Do not guarantee viral results, view counts, or subscriber growth. Clearly distinguish creative suggestions from measured analytics.
+
+### Tool 11: URL and Website Analyzer
+
+Allow users to provide a public website URL.
+
+Where supported, retrieve and analyze the page using an appropriate URL-context or web retrieval integration.
+
+Features:
+
+- Summarize a website.
+- Explain what a website offers.
+- Extract important publicly accessible information.
+- Evaluate visible content and usability.
+- Identify possible content, SEO, and accessibility improvements.
+- Help users review their own website structure and text.
+
+Handle inaccessible websites gracefully. Do not claim to have inspected pages that were not actually retrieved.
+
+Apply appropriate security protections to URL retrieval and never allow the feature to access internal server addresses or privileged network resources.
+
+### Tool 12: Smart Notes and Knowledge Organizer
+
+Allow users to save AI responses, learning notes, important facts, and research summaries.
+
+Support folders, tags, searching, editing, and deletion.
+
+Users should be able to move saved materials into projects and export them.
+
+### Tool 13: Prompt Improver
+
+Create a tool that transforms a user's rough request into a clearer, more detailed, structured prompt.
+
+Provide options for concise, detailed, technical, and professional prompts.
+
+Allow users to copy improved prompts and send them directly to a new Nasir AI conversation.
+
+### Tool 14: Document and Report Generator
+
+Generate actual downloadable text-based documents, reports, lesson notes, study guides, tables, and structured plans.
+
+Where the supported libraries and runtime permit, implement DOCX, PDF, TXT, Markdown, and CSV export.
+
+Every download must contain the real generated content. Handle failed exports and unsupported formats honestly.
+
+### Tool 15: Voice and Accessibility Assistant
+
+Where supported by the browser and after obtaining permission, implement:
+
+- Speech-to-text for composing questions.
+- Text-to-speech for reading answers aloud.
+- Play, pause, and stop controls for speech output.
+- Keyboard navigation.
+- Visible focus indicators.
+- Accessible labels and readable contrast.
+
+If a browser does not support a capability, provide a clear fallback instead of a broken control.
+
+## 9. Database Design and Persistence
+
+Implement a properly structured Firestore data model with appropriate collections for:
+
+- Users and user preferences.
+- Conversations.
+- Messages.
+- Projects.
+- Project membership or ownership where relevant.
+- Uploaded file metadata.
+- Saved documents and notes.
+- User learning progress.
+- Tool results and saved outputs.
+- Feedback and application usage records where appropriate.
+
+Use unique document identifiers, timestamps, ownership references, and the appropriate indexes.
+
+Create and configure Firestore security rules. Ensure every user can access, update, export, and delete only their authorized data.
+
+Keep privileged operations on the server where appropriate. Validate ownership on the backend instead of relying only on hidden frontend controls.
+
+Do not create a database merely for appearance. All required data must actually be saved and retrieved from the configured database.
+
+## 10. Identity and Creator Information
+
+The application must identify itself as **Nasir AI**.
+
+When someone asks in Bengali, “তোমাকে কে তৈরি করেছেন?” or “তোমার নির্মাতা কে?”, respond naturally:
+
+“আমাকে নাসির তৈরি করেছেন। আমি Nasir AI, একটি AI সহকারী, যা Gemini-ভিত্তিক AI প্রযুক্তির সাহায্যে কাজ করে।”
+
+When asked in English, “Who created you?”, respond:
+
+“Nasir created the Nasir AI application. It uses Gemini-based AI technology to assist users.”
+
+The application must not falsely claim that Nasir personally trained or owns the underlying Gemini foundation model. The intended meaning is that Nasir created this application.
+
+Store the application identity in a central configuration so it can be changed in future versions.
+
+## 11. AI Accuracy, Safety, and Responsible Use
+
+Configure the assistant to:
+
+- Explain its uncertainty when information is incomplete.
+- Use reliable sources for current or specialized factual claims when available.
+- Provide source links for web-grounded research.
+- Avoid making up facts, credentials, job openings, medical claims, or legal outcomes.
+- Explain that medical, legal, and financial information may require qualified professional advice.
+- Protect users' private documents and personal information.
+- Respect applicable safety requirements.
+- Refuse harmful requests when necessary and provide safe alternatives when appropriate.
+
+Do not make the unrealistic claim that any AI can answer absolutely every possible question with perfect accuracy.
+
+The goal is to maximize usefulness, knowledge coverage, reasoning quality, and tool-assisted accuracy while remaining transparent about limitations.
+
+## 12. Security and Privacy
+
+Implement secure authentication and server-side secret management.
+
+Required safeguards:
+
+- Never place API secrets in frontend code.
+- Validate all user input on the server.
+- Restrict access to private conversations, projects, and files.
+- Implement upload size and file-type limits.
+- Apply sensible rate limits and error handling where appropriate.
+- Prevent unauthorized access to user records.
+- Avoid logging private messages, API keys, or sensitive document contents unnecessarily.
+- Provide clear privacy settings and account data controls.
+- Allow users to delete their own history and, where supported, their accounts and associated data.
+- Do not promise that data has been deleted until the operation has succeeded.
+
+Design the application to minimize unnecessary collection and retention of personal information.
+
+## 13. Future Updates and Extensibility
+
+Design Nasir AI as a modular platform.
+
+Create separate reusable modules for:
+
+- AI model access.
+- Search and research.
+- Chat management.
+- Database operations.
+- File processing.
+- Tool registration.
+- Authentication and permissions.
+- Document generation.
+- Usage and error monitoring.
+- Application settings.
+
+Use a centralized tool registry so future tools can be added without rewriting the entire chat application.
+
+Keep the server API versioned and well organized. Separate frontend components, backend routes, AI services, database services, configuration, and shared types into maintainable files.
+
+Provide useful code comments and clear configuration instructions.
+
+Do not hardcode business logic in multiple places.
+
+## 14. User Experience, Reliability, and Error Handling
+
+Implement:
+
+- Responsive desktop and mobile layouts.
+- Clear loading indicators.
+- Streaming AI responses where supported.
+- Retry options for transient failures.
+- Friendly error messages.
+- Network failure handling.
+- API quota and rate-limit handling.
+- Empty states and success confirmations.
+- Confirmation before destructive actions.
+- Appropriate handling of expired sessions.
+- Graceful handling of missing files and unsupported formats.
+
+Never show a false success message when a request has failed.
+
+If AI generation fails, preserve the user's input where practical and allow the user to retry.
+
+## 15. Required Testing and Completion Criteria
+
+Before declaring the application complete, run and fix the available build checks and tests.
+
+Verify the following end-to-end workflows:
+
+1. Create or sign in to an account using the configured authentication method.
+2. Send a message and receive a real Gemini-generated response.
+3. Refresh the page and verify that chat history is retained.
+4. Rename, search, and delete a conversation.
+5. Create a project and save conversations to it.
+6. Upload a supported document and ask a question about its actual contents.
+7. Use live search and display genuine source citations.
+8. Open each implemented tool and test its core functionality.
+9. Save and retrieve generated notes or documents.
+10. Verify that downloads contain real generated content.
+11. Confirm that one user cannot access another user's private records.
+12. Check that secrets are not exposed in browser code.
+13. Test empty inputs, network failures, API failures, unsupported files, and database errors.
+14. Test the responsive interface on desktop and mobile-sized screens.
+15. Verify that image generation and video generation are not included.
+
+These are acceptance criteria, not simulated results. Report accurately which checks passed and which require external setup.
+
+## 16. Final Instructions to the AI Builder
+
+Start building the complete application now.
+
+Prioritize a working end-to-end system over decorative features. Implement the real frontend, server-side Gemini integration, Firebase authentication, persistent database, core chat workflow, project history, and the AI tools listed above.
+
+Continue beyond the first visual preview. Inspect the generated code, run the available checks, repair errors, and connect unfinished components to their actual implementations.
+
+Do not stop just because the homepage looks finished. Do not replace missing functionality with placeholders, fake search results, sample responses, or nonfunctional buttons.
+
+Do not add an image generator or a video generator at any stage.
+
+If a particular integration requires my permission, an API key, billing setup, or a configuration step, implement all possible code first and then clearly identify that exact requirement. Never invent credentials or claim that external services have been connected when they have not.
+
+When finished, provide a concise implementation summary, the actual implemented features, any remaining configuration requirements, and the results of the checks you genuinely performed.
+
+**The final objective is a real, secure, database-connected, expandable AI chatbot application called Nasir AI—not a demo, mockup, or unfinished template.**

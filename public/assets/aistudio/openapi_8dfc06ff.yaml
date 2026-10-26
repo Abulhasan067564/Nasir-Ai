@@ -1,0 +1,167 @@
+openapi: 3.1.0
+info:
+  title: Nasir AI API
+  version: 1.0.0
+  description: Secure, expandable API for the Nasir AI application. No image-generation or video-generation endpoints are included.
+servers:
+  - url: http://localhost:8080
+    description: Local development
+security:
+  - FirebaseBearerAuth: []
+components:
+  securitySchemes:
+    FirebaseBearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Firebase ID Token
+  schemas:
+    Error:
+      type: object
+      properties:
+        error: { type: string }
+        code: { type: string }
+        requestId: { type: string }
+paths:
+  /api/health:
+    get:
+      security: []
+      summary: Health and configuration status
+      responses:
+        '200': { description: API process is running }
+  /api/tools:
+    get:
+      security: []
+      summary: List implemented AI tools
+      responses:
+        '200': { description: Tool catalog }
+  /api/chat:
+    post:
+      summary: Send a message and store the conversation
+      description: Requires a Firebase ID token. Set useSearch=true to request Google Search grounding.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message: { type: string, minLength: 1, maxLength: 12000 }
+                conversationId: { type: string }
+                projectId: { type: string }
+                useSearch: { type: boolean, default: false }
+      responses:
+        '200': { description: AI response and stored message identifiers }
+        '400': { description: Invalid request }
+        '401': { description: Missing or invalid Firebase ID token }
+        '502': { description: AI provider request failed }
+  /api/chat/stream:
+    post:
+      summary: Stream an AI response using Server-Sent Events
+      description: Events are start, token, done, error, and close. Uses the same request body as /api/chat.
+      responses:
+        '200': { description: SSE response stream }
+  /api/conversations:
+    get:
+      summary: List current user's conversations
+      responses:
+        '200': { description: User conversation list }
+    post:
+      summary: Create an empty conversation
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string, maxLength: 120 }
+                projectId: { type: string }
+      responses:
+        '201': { description: Conversation created }
+  /api/conversations/{conversationId}:
+    parameters:
+      - name: conversationId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Read a conversation and its recent messages
+      responses:
+        '200': { description: Conversation and messages }
+        '404': { description: Conversation not found }
+    patch:
+      summary: Rename a conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title: { type: string, minLength: 1, maxLength: 120 }
+      responses:
+        '200': { description: Conversation renamed }
+    delete:
+      summary: Delete a conversation and its messages
+      responses:
+        '200': { description: Conversation deleted }
+  /api/projects:
+    get:
+      summary: List current user's projects
+      responses:
+        '200': { description: Project list }
+    post:
+      summary: Create a project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title: { type: string, maxLength: 100 }
+                description: { type: string, maxLength: 1000 }
+                instructions: { type: string, maxLength: 6000 }
+      responses:
+        '201': { description: Project created }
+  /api/projects/{projectId}:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Get a project
+      responses:
+        '200': { description: Project details }
+    patch:
+      summary: Update a project
+      responses:
+        '200': { description: Project updated }
+    delete:
+      summary: Delete a project and detach its conversations
+      responses:
+        '200': { description: Project deleted }
+  /api/tools/run:
+    post:
+      summary: Run an implemented AI productivity tool
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [toolId, prompt]
+              properties:
+                toolId:
+                  type: string
+                  enum: [research, job-search, study-tutor, study-plan, writing, translation, cv-builder, interview-coach, code-assistant, prompt-improver, youtube-seo, career-plan]
+                prompt: { type: string, minLength: 1, maxLength: 12000 }
+                language: { type: string, maxLength: 50 }
+      responses:
+        '200': { description: AI tool result and available source citations }
+        '400': { description: Invalid request }
+        '401': { description: Missing or invalid Firebase ID token }

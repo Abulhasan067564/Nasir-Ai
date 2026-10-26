@@ -1,0 +1,79 @@
+{
+  "info": {
+    "name": "Nasir AI API",
+    "description": "Starter collection for the Nasir AI backend. Set baseUrl and firebaseIdToken before running protected endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "firebaseIdToken", "value": "PASTE_FIREBASE_ID_TOKEN_HERE" },
+    { "key": "conversationId", "value": "PASTE_CONVERSATION_ID_HERE" },
+    { "key": "projectId", "value": "PASTE_PROJECT_ID_HERE" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/health" }
+    },
+    {
+      "name": "List AI Tools",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/tools" }
+    },
+    {
+      "name": "Chat — new conversation",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{firebaseIdToken}}" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"message\": \"বাংলায় সৌরজগত সহজভাবে বুঝিয়ে বলুন\",\n  \"useSearch\": false\n}" },
+        "url": "{{baseUrl}}/api/chat"
+      }
+    },
+    {
+      "name": "Chat — continue conversation",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{firebaseIdToken}}" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"message\": \"আরও একটি উদাহরণ দিন\",\n  \"conversationId\": \"{{conversationId}}\",\n  \"useSearch\": false\n}" },
+        "url": "{{baseUrl}}/api/chat"
+      }
+    },
+    {
+      "name": "Research Tool",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{firebaseIdToken}}" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"toolId\": \"research\",\n  \"prompt\": \"বাংলাদেশে বর্তমান প্রযুক্তি শিক্ষার সুযোগ খুঁজে নির্ভরযোগ্য সূত্রসহ সারাংশ দিন\",\n  \"language\": \"Bengali\"\n}" },
+        "url": "{{baseUrl}}/api/tools/run"
+      }
+    },
+    {
+      "name": "List Conversations",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{firebaseIdToken}}" }],
+        "url": "{{baseUrl}}/api/conversations"
+      }
+    },
+    {
+      "name": "Create Project",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{firebaseIdToken}}" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"title\": \"আমার পড়াশোনা\",\n  \"description\": \"ষষ্ঠ শ্রেণির পড়াশোনার নোট ও পরিকল্পনা\",\n  \"instructions\": \"সহজ বাংলায় ধাপে ধাপে ব্যাখ্যা করবেন।\"\n}" },
+        "url": "{{baseUrl}}/api/projects"
+      }
+    }
+  ]
+}
