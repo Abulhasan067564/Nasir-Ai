@@ -10,7 +10,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = Number(process.env.PORT) || 3000;
+
+function resolvePort(): number {
+  const portArgIdx = process.argv.indexOf('--port');
+  if (portArgIdx !== -1 && process.argv[portArgIdx + 1]) {
+    return Number(process.argv[portArgIdx + 1]);
+  }
+  // AI Studio environment constraint: dev server must run on port 3000
+  if (process.env.NODE_ENV !== 'production') {
+    return 3000;
+  }
+  return Number(process.env.PORT) || 3000;
+}
+
+const PORT = resolvePort();
 const HOST = '0.0.0.0';
 
 app.use(express.json({ limit: '20mb' }));
@@ -450,6 +463,10 @@ app.post(['/api/chat/stream', '/api/chat/stream/'], async (req: Request, res: Re
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache, no-transform');
     res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    if (typeof (res as any).flushHeaders === 'function') {
+      (res as any).flushHeaders();
+    }
 
     const config: any = {
       systemInstruction: fullSystemInstruction,
@@ -461,6 +478,9 @@ app.post(['/api/chat/stream', '/api/chat/stream/'], async (req: Request, res: Re
     }
 
     res.write(`event: start\ndata: ${JSON.stringify({ started: true })}\n\n`);
+    if (typeof (res as any).flush === 'function') {
+      (res as any).flush();
+    }
 
     let responseStream: any;
     try {
@@ -489,6 +509,9 @@ app.post(['/api/chat/stream', '/api/chat/stream/'], async (req: Request, res: Re
       if (textChunk) {
         fullText += textChunk;
         res.write(`event: token\ndata: ${JSON.stringify({ token: textChunk })}\n\n`);
+        if (typeof (res as any).flush === 'function') {
+          (res as any).flush();
+        }
       }
 
       // Check citations if chunk has candidates

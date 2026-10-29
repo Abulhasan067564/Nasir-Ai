@@ -1,4 +1,5 @@
 export type Language = 'en' | 'bn';
+export type Theme = 'dark' | 'light';
 
 export interface Citation {
   title: string;

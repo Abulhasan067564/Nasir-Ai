@@ -24,6 +24,8 @@ interface NotesWorkspaceProps {
   onUpdateNote: (id: string, title: string, content: string, folder?: string, tags?: string[]) => Promise<void>;
   onDeleteNote: (id: string) => Promise<void>;
   language: Language;
+  activeNoteId?: string | null;
+  onSelectNote?: (id: string | null) => void;
 }
 
 export const NotesWorkspace: React.FC<NotesWorkspaceProps> = ({
@@ -32,17 +34,25 @@ export const NotesWorkspace: React.FC<NotesWorkspaceProps> = ({
   onUpdateNote,
   onDeleteNote,
   language,
+  activeNoteId,
+  onSelectNote,
 }) => {
   const t = translations[language];
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFolder, setSelectedFolder] = useState<string>('all');
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(
-    notes.length > 0 ? notes[0].id : null
+    activeNoteId || (notes.length > 0 ? notes[0].id : null)
   );
   const [isEditing, setIsEditing] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  React.useEffect(() => {
+    if (activeNoteId) {
+      setSelectedNoteId(activeNoteId);
+    }
+  }, [activeNoteId]);
 
   // Form states
   const [formTitle, setFormTitle] = useState('');

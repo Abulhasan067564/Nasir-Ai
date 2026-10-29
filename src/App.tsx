@@ -11,6 +11,7 @@ import {
   SavedNote,
   UserProfile,
   Language,
+  Theme,
 } from './lib/types';
 import {
   auth,
@@ -42,11 +43,38 @@ import { AuthModal } from './components/AuthModal';
 
 export default function App() {
   const [language, setLanguage] = useState<Language>('en');
+  const [theme, setTheme] = useState<Theme>(() => {
+    try {
+      return localStorage.getItem('nasir_ai_theme') === 'light' ? 'light' : 'dark';
+    } catch {
+      return 'dark';
+    }
+  });
   const [currentTab, setCurrentTab] = useState<'chat' | 'tools' | 'projects' | 'notes'>('chat');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isLiveVoiceOpen, setIsLiveVoiceOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  // Sync theme with document element
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    } else {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+    }
+    try {
+      localStorage.setItem('nasir_ai_theme', theme);
+    } catch {
+      // ignore
+    }
+  }, [theme]);
+
+  const handleToggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
 
   // User state
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -58,6 +86,7 @@ export default function App() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
   const [savedNotes, setSavedNotes] = useState<SavedNote[]>([]);
+  const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
 
   // Generating & Abort control
   const [isGenerating, setIsGenerating] = useState(false);
@@ -503,7 +532,11 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-zinc-950 text-zinc-100 font-sans antialiased">
+    <div
+      className={`flex h-screen w-screen overflow-hidden font-sans antialiased transition-colors duration-200 ${
+        theme === 'dark' ? 'bg-zinc-950 text-zinc-100' : 'bg-slate-50 text-zinc-900'
+      }`}
+    >
       {/* Collapsible Left Sidebar */}
       <Sidebar
         currentTab={currentTab}
@@ -518,6 +551,11 @@ export default function App() {
         projects={projects}
         activeProjectId={activeProjectId}
         onSelectProject={(id) => setActiveProjectId(id)}
+        savedNotes={savedNotes}
+        onSelectNote={(id) => {
+          setActiveNoteId(id);
+          setCurrentTab('notes');
+        }}
         user={user}
         onSignIn={handleSignIn}
         onSignOut={handleSignOut}
@@ -527,10 +565,16 @@ export default function App() {
         isCollapsed={isSidebarCollapsed}
         onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
         onOpenLiveVoice={() => setIsLiveVoiceOpen(true)}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
       />
 
       {/* Main Workspace Area */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden bg-zinc-900/30">
+      <main
+        className={`flex-1 flex flex-col h-full overflow-hidden transition-colors duration-200 ${
+          theme === 'dark' ? 'bg-zinc-900/30' : 'bg-slate-100/70'
+        }`}
+      >
         {currentTab === 'chat' && (
           <ChatWorkspace
             conversation={activeConversation}
@@ -548,6 +592,9 @@ export default function App() {
             onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)}
             isSidebarCollapsed={isSidebarCollapsed}
             onOpenLiveVoice={() => setIsLiveVoiceOpen(true)}
+            theme={theme}
+            onToggleTheme={handleToggleTheme}
+            onTogglePin={handleTogglePinConversation}
           />
         )}
 
@@ -583,6 +630,8 @@ export default function App() {
             onUpdateNote={handleUpdateNote}
             onDeleteNote={handleDeleteNote}
             language={language}
+            activeNoteId={activeNoteId}
+            onSelectNote={setActiveNoteId}
           />
         )}
       </main>
@@ -593,6 +642,8 @@ export default function App() {
         onClose={() => setIsSettingsOpen(false)}
         language={language}
         onLanguageChange={(l) => setLanguage(l)}
+        theme={theme}
+        onThemeChange={(th) => setTheme(th)}
       />
 
       {/* Live Voice Conversation Modal */}
