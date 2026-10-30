@@ -11,9 +11,13 @@ import {
   RefreshCw,
   X,
   Radio,
+  Play,
+  Volume,
+  AlertTriangle,
 } from 'lucide-react';
 import { Language } from '../lib/types';
 import { sendChatMessage } from '../lib/api';
+import { NasirLogo } from './NasirLogo';
 
 interface LiveVoiceModalProps {
   isOpen: boolean;
@@ -39,6 +43,8 @@ export const LiveVoiceModal: React.FC<LiveVoiceModalProps> = ({
   const [isMuted, setIsMuted] = useState(false);
   const [showTranscript, setShowTranscript] = useState(true);
   const [callDuration, setCallDuration] = useState(0);
+  const [micError, setMicError] = useState<string | null>(null);
+  const [sessionTurns, setSessionTurns] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
 
   const recognitionRef = useRef<any>(null);
   const silenceTimerRef = useRef<any>(null);
@@ -121,7 +127,7 @@ export const LiveVoiceModal: React.FC<LiveVoiceModalProps> = ({
       recognition.onerror = (event: any) => {
         console.warn('Voice recognition error:', event.error);
         if (event.error === 'not-allowed') {
-          alert(
+          setMicError(
             language === 'bn'
               ? 'মাইক্রোফোন ব্যবহারের অনুমতি দিন লাইভ কথা বলার জন্য।'
               : 'Please allow microphone access to talk directly with Nasir AI.'
@@ -169,6 +175,7 @@ export const LiveVoiceModal: React.FC<LiveVoiceModalProps> = ({
     setLastUserSpeech(spokenText);
     setTranscript('');
     setCallState('thinking');
+    setMicError(null);
 
     // Pause recognition while AI thinks & speaks
     if (recognitionRef.current) {
@@ -178,9 +185,10 @@ export const LiveVoiceModal: React.FC<LiveVoiceModalProps> = ({
     }
 
     try {
+      const historyToSend = sessionTurns.slice(-6);
       const response = await sendChatMessage(
         spokenText,
-        [],
+        historyToSend,
         false,
         projectInstructions
           ? `${projectInstructions}\nRespond conversationally, concisely, and naturally for real-time speech dialogue.`
@@ -190,6 +198,13 @@ export const LiveVoiceModal: React.FC<LiveVoiceModalProps> = ({
       const aiReply = response.reply || '';
       setLastAiResponse(aiReply);
       setCallState('speaking');
+
+      // Update multi-turn live session memory
+      setSessionTurns((prev) => [
+        ...prev,
+        { role: 'user', content: spokenText },
+        { role: 'assistant', content: aiReply },
+      ]);
 
       if (onSaveToChatHistory) {
         onSaveToChatHistory(spokenText, aiReply);
@@ -333,13 +348,11 @@ export const LiveVoiceModal: React.FC<LiveVoiceModalProps> = ({
             }`}
           >
             <div
-              className={`w-32 h-32 rounded-full flex items-center justify-center transition-transform duration-300 ${
-                callState === 'speaking'
-                  ? 'scale-110 bg-gradient-to-tr from-teal-500 to-emerald-400'
-                  : 'bg-gradient-to-tr from-teal-600 to-emerald-600'
-              } text-zinc-950 font-black text-4xl shadow-xl`}
+              className={`w-32 h-32 rounded-3xl flex items-center justify-center transition-transform duration-300 ${
+                callState === 'speaking' ? 'scale-110 shadow-xl' : ''
+              }`}
             >
-              N
+              <NasirLogo size="xl" glow={false} />
             </div>
           </div>
 
@@ -374,6 +387,13 @@ export const LiveVoiceModal: React.FC<LiveVoiceModalProps> = ({
             {callState === 'speaking' && (language === 'bn' ? '🔊 নাসির এআই উত্তর দিচ্ছে...' : '🔊 Nasir AI is speaking...')}
             {callState === 'idle' && (language === 'bn' ? 'কথা বলার জন্য প্রস্তুত' : 'Ready to talk')}
           </p>
+
+          {micError && (
+            <div className="mt-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-1.5 max-w-sm">
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+              <span>{micError}</span>
+            </div>
+          )}
 
           <p className="text-xs text-zinc-400 mt-1 max-w-sm">
             {language === 'bn'
@@ -420,11 +440,11 @@ export const LiveVoiceModal: React.FC<LiveVoiceModalProps> = ({
         )}
 
         {/* Action Controls Toolbar */}
-        <div className="flex items-center gap-4 mt-4 z-10">
+        <div className="flex items-center gap-3 mt-4 z-10 flex-wrap justify-center">
           {/* Mute Mic */}
           <button
             onClick={handleToggleMute}
-            className={`p-4 rounded-full transition-all ${
+            className={`p-3.5 rounded-full transition-all ${
               isMuted
                 ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
                 : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/60'
@@ -433,6 +453,17 @@ export const LiveVoiceModal: React.FC<LiveVoiceModalProps> = ({
           >
             {isMuted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
           </button>
+
+          {/* Replay Latest Audio Response */}
+          {lastAiResponse && (
+            <button
+              onClick={() => speakAiResponse(lastAiResponse)}
+              className="p-3.5 rounded-full bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/40 transition-all shadow-md"
+              title={language === 'bn' ? 'উত্তর পুনরায় শুনুন' : 'Replay Answer'}
+            >
+              <Volume2 className="w-5 h-5" />
+            </button>
+          )}
 
           {/* End Call Button */}
           <button
@@ -447,7 +478,7 @@ export const LiveVoiceModal: React.FC<LiveVoiceModalProps> = ({
           {/* Toggle Transcript View */}
           <button
             onClick={() => setShowTranscript((prev) => !prev)}
-            className={`p-4 rounded-full transition-all ${
+            className={`p-3.5 rounded-full transition-all ${
               showTranscript
                 ? 'bg-teal-500/20 text-teal-300 border border-teal-500/40'
                 : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-400 border border-zinc-700/60'

@@ -16,11 +16,9 @@ function resolvePort(): number {
   if (portArgIdx !== -1 && process.argv[portArgIdx + 1]) {
     return Number(process.argv[portArgIdx + 1]);
   }
-  // AI Studio environment constraint: dev server must run on port 3000
-  if (process.env.NODE_ENV !== 'production') {
-    return 3000;
-  }
-  return Number(process.env.PORT) || 3000;
+  // The app container's NGINX reverse-proxy listens on port 8080 and forwards to port 3000.
+  // Both in development and production container, this Node server must ALWAYS listen on port 3000.
+  return 3000;
 }
 
 const PORT = resolvePort();
@@ -40,83 +38,73 @@ const ai = new GoogleGenAI({
   },
 });
 
-const DEFAULT_MODEL = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
+// gemini-3.1-flash-lite provides sub-second (<800ms) latency and high reliability
+const DEFAULT_MODEL = process.env.GEMINI_MODEL || 'gemini-3.1-flash-lite';
 
-// Robust execution with automatic retry and model fallback for high reliability
-async function withRetry<T>(fn: () => Promise<T>, retries = 2, delayMs = 1000): Promise<T> {
-  try {
-    return await fn();
-  } catch (err: any) {
-    const isTemporary =
-      err?.status === 503 ||
-      err?.status === 429 ||
-      err?.message?.includes('high demand') ||
-      err?.message?.includes('UNAVAILABLE') ||
-      err?.message?.includes('RESOURCE_EXHAUSTED');
-
-    if (retries > 0 && isTemporary) {
-      console.warn(`Upstream model temporarily unavailable, retrying in ${delayMs}ms... (${retries} attempts left)`);
-      await new Promise((res) => setTimeout(res, delayMs));
-      return withRetry(fn, retries - 1, delayMs * 2);
-    }
-    throw err;
-  }
-}
+const FALLBACK_MODELS = [
+  DEFAULT_MODEL,
+  'gemini-3.1-flash-lite',
+  'gemini-3.5-flash',
+  'gemini-3.5-flash-lite',
+  'gemini-3.8-flash',
+].filter((m, i, arr) => arr.indexOf(m) === i);
 
 async function generateWithFallback(params: { contents: any; config: any }) {
-  try {
-    return await ai.models.generateContent({
-      model: DEFAULT_MODEL,
-      contents: params.contents,
-      config: params.config,
-    });
-  } catch (err: any) {
-    const isOverloaded =
-      err?.status === 503 ||
-      err?.status === 429 ||
-      err?.message?.includes('503') ||
-      err?.message?.includes('high demand') ||
-      err?.message?.includes('UNAVAILABLE') ||
-      err?.message?.includes('RESOURCE_EXHAUSTED');
-
-    if (isOverloaded) {
-      console.warn('Fast-failing over to gemini-3.1-flash-lite due to upstream 503 high demand');
+  let lastError: any = null;
+  for (const model of FALLBACK_MODELS) {
+    try {
       return await ai.models.generateContent({
-        model: 'gemini-3.1-flash-lite',
+        model,
         contents: params.contents,
         config: params.config,
       });
+    } catch (err: any) {
+      lastError = err;
+      const isRetriable =
+        err?.status === 503 ||
+        err?.status === 429 ||
+        err?.message?.includes('503') ||
+        err?.message?.includes('high demand') ||
+        err?.message?.includes('UNAVAILABLE') ||
+        err?.message?.includes('RESOURCE_EXHAUSTED');
+
+      if (isRetriable) {
+        console.warn(`Model ${model} unavailable/overloaded (${err?.message?.slice(0, 80)}), falling back to next candidate...`);
+        continue;
+      }
+      throw err;
     }
-    throw err;
   }
+  throw lastError;
 }
 
 async function generateStreamWithFallback(params: { contents: any; config: any }) {
-  try {
-    return await ai.models.generateContentStream({
-      model: DEFAULT_MODEL,
-      contents: params.contents,
-      config: params.config,
-    });
-  } catch (err: any) {
-    const isOverloaded =
-      err?.status === 503 ||
-      err?.status === 429 ||
-      err?.message?.includes('503') ||
-      err?.message?.includes('high demand') ||
-      err?.message?.includes('UNAVAILABLE') ||
-      err?.message?.includes('RESOURCE_EXHAUSTED');
-
-    if (isOverloaded) {
-      console.warn('Fast-failing over stream to gemini-3.1-flash-lite due to upstream 503 high demand');
+  let lastError: any = null;
+  for (const model of FALLBACK_MODELS) {
+    try {
       return await ai.models.generateContentStream({
-        model: 'gemini-3.1-flash-lite',
+        model,
         contents: params.contents,
         config: params.config,
       });
+    } catch (err: any) {
+      lastError = err;
+      const isRetriable =
+        err?.status === 503 ||
+        err?.status === 429 ||
+        err?.message?.includes('503') ||
+        err?.message?.includes('high demand') ||
+        err?.message?.includes('UNAVAILABLE') ||
+        err?.message?.includes('RESOURCE_EXHAUSTED');
+
+      if (isRetriable) {
+        console.warn(`Model ${model} stream unavailable/overloaded (${err?.message?.slice(0, 80)}), trying next candidate...`);
+        continue;
+      }
+      throw err;
     }
-    throw err;
   }
+  throw lastError;
 }
 
 // System prompt defining Nasir AI identity and behaviors
@@ -717,7 +705,7 @@ async function setupVite() {
   if (!isProd) {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: { middlewareMode: true, hmr: false },
       appType: 'spa',
     });
     app.use(vite.middlewares);
@@ -729,8 +717,12 @@ async function setupVite() {
     });
   }
 
-  app.listen(PORT, HOST, () => {
+  const server = app.listen(PORT, HOST, () => {
     console.log(`Nasir AI Server running at http://${HOST}:${PORT}`);
+  });
+
+  server.on('error', (err: any) => {
+    console.error(`Nasir AI Server listen error:`, err);
   });
 }
 

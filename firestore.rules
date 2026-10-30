@@ -69,5 +69,11 @@ service cloud.firestore {
       allow update: if isSignedIn() && resource.data.userId == request.auth.uid && request.resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
+
+    // Public Site & Admin Config
+    match /admin_settings/{configId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
   }
 }

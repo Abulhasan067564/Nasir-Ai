@@ -1,7 +1,8 @@
 import React from 'react';
-import { X, Globe, Sparkles, Database, Shield, User, Info, Check, Sun, Moon, Palette } from 'lucide-react';
+import { X, Globe, Sparkles, Database, Shield, User, Info, Check, Sun, Moon, Palette, KeyRound } from 'lucide-react';
 import { Language, Theme } from '../lib/types';
 import { translations } from '../lib/translations';
+import { NasirLogo } from './NasirLogo';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface SettingsModalProps {
   onLanguageChange: (lang: Language) => void;
   theme?: Theme;
   onThemeChange?: (theme: Theme) => void;
+  onOpenAdminPanel?: () => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -19,6 +21,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onLanguageChange,
   theme = 'dark',
   onThemeChange,
+  onOpenAdminPanel,
 }) => {
   if (!isOpen) return null;
   const t = translations[language];
@@ -34,9 +37,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           isDark ? 'border-zinc-800/80' : 'border-zinc-200'
         }`}>
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-teal-400 to-emerald-600 flex items-center justify-center text-zinc-950 font-bold text-sm shadow-sm">
-              N
-            </div>
+            <NasirLogo size="sm" />
             <div>
               <h2 className={`text-base font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{t.settings}</h2>
               <p className={`text-[11px] ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Nasir AI Configuration & Creator Information</p>
@@ -212,6 +213,35 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           </div>
 
+          {/* Admin Management Section */}
+          {onOpenAdminPanel && (
+            <div className={`p-3.5 rounded-xl border flex items-center justify-between ${
+              isDark ? 'bg-zinc-900/60 border-zinc-800' : 'bg-teal-50/50 border-teal-200'
+            }`}>
+              <div className="flex items-center gap-2">
+                <KeyRound className="w-4 h-4 text-teal-500" />
+                <div>
+                  <div className="font-semibold text-xs">
+                    {language === 'bn' ? 'এডমিন কনসোল' : 'Admin Console'}
+                  </div>
+                  <div className="text-[11px] text-zinc-400">
+                    {language === 'bn' ? 'লোগো, নাম, এআই ইঞ্জিন ও ব্যাকআপ নিয়ন্ত্রণ' : 'Logo, branding, AI engine & data'}
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenAdminPanel();
+                }}
+                className="px-3 py-1.5 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 text-teal-400 border border-teal-500/40 text-xs font-semibold transition-colors"
+              >
+                {language === 'bn' ? 'প্রবেশ করুন' : 'Open Admin'}
+              </button>
+            </div>
+          )}
+
           {/* Note on Educational & Knowledge Focus */}
           <div className={`p-3 rounded-xl border text-xs flex items-start gap-2 ${
             isDark
@@ -226,9 +256,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className={`px-6 py-3 border-t flex justify-end ${
+        <div className={`px-6 py-3 border-t flex justify-between items-center ${
           isDark ? 'border-zinc-800/80 bg-zinc-950' : 'border-zinc-200 bg-zinc-50'
         }`}>
+          {onOpenAdminPanel ? (
+            <button
+              onClick={() => {
+                onClose();
+                onOpenAdminPanel();
+              }}
+              className="text-xs text-teal-500 hover:text-teal-400 font-medium flex items-center gap-1"
+            >
+              <KeyRound className="w-3.5 h-3.5" />
+              <span>{language === 'bn' ? 'এডমিন প্যানেল' : 'Admin Panel'}</span>
+            </button>
+          ) : <div />}
           <button
             onClick={onClose}
             className="px-4 py-1.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-zinc-950 font-semibold text-xs shadow-sm"

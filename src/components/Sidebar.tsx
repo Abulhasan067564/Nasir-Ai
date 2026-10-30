@@ -22,9 +22,11 @@ import {
   Radio,
   Sun,
   Moon,
+  Shield,
 } from 'lucide-react';
 import { Conversation, Project, SavedNote, UserProfile, Language, Theme } from '../lib/types';
 import { translations } from '../lib/translations';
+import { NasirLogo } from './NasirLogo';
 
 interface SidebarProps {
   currentTab: 'chat' | 'tools' | 'projects' | 'notes';
@@ -47,6 +49,9 @@ interface SidebarProps {
   language: Language;
   onToggleLanguage: () => void;
   onOpenSettings: () => void;
+  onOpenAdminPanel?: () => void;
+  siteName?: string;
+  siteTagline?: string;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
   onOpenLiveVoice: () => void;
@@ -75,6 +80,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   language,
   onToggleLanguage,
   onOpenSettings,
+  onOpenAdminPanel,
+  siteName = 'Nasir AI',
+  siteTagline = 'By Nasir • Powered by Gemini',
   isCollapsed,
   onToggleCollapse,
   onOpenLiveVoice,
@@ -302,6 +310,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {language === 'en' ? 'বাং' : 'EN'}
           </button>
 
+          {onOpenAdminPanel && (
+            <button
+              onClick={onOpenAdminPanel}
+              className={`p-2.5 rounded-xl transition-colors ${
+                isDark ? 'text-teal-400 hover:bg-zinc-900' : 'text-teal-600 hover:bg-zinc-100'
+              }`}
+              title={language === 'bn' ? 'এডমিন প্যানেল' : 'Admin Panel'}
+            >
+              <Shield className="w-5 h-5" />
+            </button>
+          )}
+
           <button
             onClick={onOpenSettings}
             className={`p-2.5 rounded-xl transition-colors ${
@@ -326,20 +346,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className={`flex flex-col p-4 border-b ${isDark ? 'border-zinc-900' : 'border-zinc-200'}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-400 to-emerald-600 flex items-center justify-center text-zinc-950 shadow-md shadow-teal-500/20 font-extrabold text-lg">
-              N
-            </div>
+            <NasirLogo size="sm" />
             <div>
               <div className="flex items-center gap-1.5">
                 <span className={`font-bold tracking-wide text-base ${isDark ? 'text-white' : 'text-zinc-900'}`}>
-                  Nasir AI
+                  {siteName}
                 </span>
                 <span className="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded bg-teal-500/10 text-teal-400 border border-teal-500/20">
-                  v1.0
+                  PRO
                 </span>
               </div>
-              <p className={`text-[11px] ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
-                By Nasir • Powered by Gemini
+              <p className={`text-[11px] truncate max-w-[150px] ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                {siteTagline}
               </p>
             </div>
           </div>
@@ -774,6 +792,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <span className="text-[11px] font-medium">
                 {isDark ? t.lightMode : t.darkMode}
               </span>
+            </button>
+          )}
+
+          {onOpenAdminPanel && (
+            <button
+              onClick={onOpenAdminPanel}
+              className={`flex items-center gap-1 px-2 py-1 rounded-md transition-colors ${
+                isDark ? 'hover:bg-zinc-900 text-teal-400 hover:text-teal-300' : 'hover:bg-zinc-200/60 text-teal-600 hover:text-teal-800'
+              }`}
+              title={language === 'bn' ? 'এডমিন প্যানেল' : 'Admin Panel'}
+            >
+              <Shield className="w-3.5 h-3.5" />
+              <span className="text-[11px] font-semibold">{language === 'bn' ? 'এডমিন' : 'Admin'}</span>
             </button>
           )}
 

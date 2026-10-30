@@ -28,10 +28,13 @@ import {
   Pin,
   Sun,
   Moon,
+  Database,
 } from 'lucide-react';
 import { Message, Conversation, Project, Language, Citation, Theme } from '../lib/types';
 import { translations } from '../lib/translations';
 import { MarkdownView } from './MarkdownView';
+import { NasirLogo } from './NasirLogo';
+import { exportAllUserData } from '../lib/dataBackup';
 
 interface ChatWorkspaceProps {
   conversation: Conversation | null;
@@ -46,6 +49,8 @@ interface ChatWorkspaceProps {
   onLinkProject: (projectId: string | undefined) => void;
   onSaveToNotes: (title: string, content: string) => void;
   language: Language;
+  siteName?: string;
+  welcomeHeading?: string;
   onToggleSidebar?: () => void;
   isSidebarCollapsed?: boolean;
   onOpenLiveVoice?: () => void;
@@ -67,6 +72,8 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
   onLinkProject,
   onSaveToNotes,
   language,
+  siteName = 'Nasir AI',
+  welcomeHeading,
   onToggleSidebar,
   isSidebarCollapsed,
   onOpenLiveVoice,
@@ -504,6 +511,20 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
                   <span>{t.exportText}</span>
                 </button>
                 <button
+                  onClick={() => {
+                    if (conversation) {
+                      exportAllUserData([conversation], messages, [], projects);
+                    }
+                    setShowExportMenu(false);
+                  }}
+                  className={`flex items-center gap-2 w-full px-3 py-2 text-left ${
+                    isDark ? 'hover:bg-zinc-800 text-zinc-300' : 'hover:bg-zinc-100 text-zinc-800'
+                  }`}
+                >
+                  <Database className="w-4 h-4 text-cyan-400" />
+                  <span>{language === 'bn' ? 'JSON ব্যাকআপ (.json)' : 'Export JSON Backup (.json)'}</span>
+                </button>
+                <button
                   onClick={handlePrint}
                   className={`flex items-center gap-2 w-full px-3 py-2 text-left ${
                     isDark ? 'hover:bg-zinc-800 text-zinc-400' : 'hover:bg-zinc-100 text-zinc-600'
@@ -525,14 +546,14 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
         {messages.length === 0 ? (
           /* Welcome Screen */
           <div className="max-w-3xl mx-auto py-8 md:py-16 text-center space-y-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-400 to-emerald-600 text-zinc-950 shadow-xl shadow-teal-500/20 font-black text-3xl">
-              N
+            <div className="inline-flex items-center justify-center">
+              <NasirLogo size="xl" />
             </div>
             <div>
               <h1 className={`text-2xl md:text-3xl font-extrabold tracking-tight ${
                 isDark ? 'text-white' : 'text-zinc-900'
               }`}>
-                {t.welcomeHeading}
+                {welcomeHeading || t.welcomeHeading}
               </h1>
               <p className={`mt-2 text-sm max-w-lg mx-auto leading-relaxed ${
                 isDark ? 'text-zinc-400' : 'text-zinc-600'
@@ -626,9 +647,7 @@ export const ChatWorkspace: React.FC<ChatWorkspaceProps> = ({
               // Assistant message
               return (
                 <div key={message.id} className="flex gap-3.5 items-start group">
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-teal-400 to-emerald-600 flex items-center justify-center text-zinc-950 font-bold text-sm shrink-0 shadow-md shadow-teal-500/20 mt-1">
-                    N
-                  </div>
+                  <NasirLogo size="sm" className="mt-1" />
                   <div className="flex-1 overflow-hidden space-y-2">
                     <div className={`rounded-2xl p-4 text-sm md:text-base border shadow-xs transition-colors ${
                       isDark

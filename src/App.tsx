@@ -40,6 +40,13 @@ import { NotesWorkspace } from './components/NotesWorkspace';
 import { SettingsModal } from './components/SettingsModal';
 import { LiveVoiceModal } from './components/LiveVoiceModal';
 import { AuthModal } from './components/AuthModal';
+import { AdminPanelModal } from './components/AdminPanelModal';
+import {
+  AdminSettings,
+  DEFAULT_ADMIN_SETTINGS,
+  getAdminSettings,
+  ADMIN_SETTINGS_CHANGE_EVENT,
+} from './lib/adminSettings';
 
 export default function App() {
   const [language, setLanguage] = useState<Language>('en');
@@ -50,6 +57,8 @@ export default function App() {
       return 'dark';
     }
   });
+  const [adminSettings, setAdminSettings] = useState<AdminSettings>(DEFAULT_ADMIN_SETTINGS);
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [currentTab, setCurrentTab] = useState<'chat' | 'tools' | 'projects' | 'notes'>('chat');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -98,6 +107,24 @@ export default function App() {
       console.log('Nasir AI Firestore connection ready:', ok);
     });
 
+    // Load dynamic site and admin configuration
+    getAdminSettings().then((loaded) => {
+      setAdminSettings(loaded);
+      if (loaded.siteName) {
+        document.title = `${loaded.siteName} — Advanced Full-Stack AI Assistant`;
+      }
+    });
+
+    const handleSettingsChange = (e: any) => {
+      if (e.detail) {
+        setAdminSettings(e.detail);
+        if (e.detail.siteName) {
+          document.title = `${e.detail.siteName} — Advanced Full-Stack AI Assistant`;
+        }
+      }
+    };
+    window.addEventListener(ADMIN_SETTINGS_CHANGE_EVENT, handleSettingsChange);
+
     const unsubscribe = subscribeToAuth((authedUser) => {
       if (authedUser) {
         setUser(authedUser);
@@ -117,7 +144,10 @@ export default function App() {
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      window.removeEventListener(ADMIN_SETTINGS_CHANGE_EVENT, handleSettingsChange);
+    };
   }, []);
 
   // 2. Load user's conversations, projects, and saved notes when user is identified
@@ -562,6 +592,9 @@ export default function App() {
         language={language}
         onToggleLanguage={() => setLanguage((l) => (l === 'en' ? 'bn' : 'en'))}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenAdminPanel={() => setIsAdminOpen(true)}
+        siteName={adminSettings.siteName}
+        siteTagline={language === 'bn' ? adminSettings.siteTaglineBn : adminSettings.siteTagline}
         isCollapsed={isSidebarCollapsed}
         onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
         onOpenLiveVoice={() => setIsLiveVoiceOpen(true)}
@@ -589,6 +622,8 @@ export default function App() {
             onLinkProject={handleLinkProject}
             onSaveToNotes={(title, content) => handleSaveToNotes(title, content)}
             language={language}
+            siteName={adminSettings.siteName}
+            welcomeHeading={language === 'bn' ? adminSettings.welcomeGreetingBn : adminSettings.welcomeGreetingEn}
             onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)}
             isSidebarCollapsed={isSidebarCollapsed}
             onOpenLiveVoice={() => setIsLiveVoiceOpen(true)}
@@ -644,6 +679,7 @@ export default function App() {
         onLanguageChange={(l) => setLanguage(l)}
         theme={theme}
         onThemeChange={(th) => setTheme(th)}
+        onOpenAdminPanel={() => setIsAdminOpen(true)}
       />
 
       {/* Live Voice Conversation Modal */}
@@ -716,6 +752,25 @@ export default function App() {
         onSuccess={(profile) => {
           setUser(profile);
           setIsAuthModalOpen(false);
+        }}
+      />
+
+      {/* Admin Panel Master Console */}
+      <AdminPanelModal
+        isOpen={isAdminOpen}
+        onClose={() => setIsAdminOpen(false)}
+        language={language}
+        theme={theme}
+        conversations={conversations}
+        messages={messages}
+        savedNotes={savedNotes}
+        projects={projects}
+        userId={user?.uid}
+        onDataRestored={(restored) => {
+          if (restored.conversations.length > 0) setConversations(restored.conversations);
+          if (restored.messages.length > 0) setMessages(restored.messages);
+          if (restored.savedNotes.length > 0) setSavedNotes(restored.savedNotes);
+          if (restored.projects.length > 0) setProjects(restored.projects);
         }}
       />
     </div>
